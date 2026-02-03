@@ -21,6 +21,8 @@ NODES=(
     "https://github.com/MoonGoblinDev/Civicomfy"
     "https://github.com/romandev-codex/ComfyUI-Downloader"
     "https://github.com/willmiao/ComfyUI-Lora-Manager"
+	"https://github.com/kijai/ComfyUI-segment-anything-2"
+	"https://github.com/un-seen/comfyui-tensorops"
 )
 
 WORKFLOWS=(
@@ -28,7 +30,8 @@ WORKFLOWS=(
 )
 
 CLIP_MODELS=(
-    # None
+"https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/clip_vision/clip_vision_h.safetensors"
+
 )
 
 UNET_MODELS=(
@@ -36,10 +39,14 @@ UNET_MODELS=(
 )
 
 VAE_MODELS=(
-    # None
+"https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors"
+
 )
 
 LORA_MODELS=(
+"https://huggingface.co/osantinello/Wan_animate_relight_lora/resolve/main/WanAnimate_relight_lora_fp16.safetensors"
+"https://huggingface.co/denisbalon/lightx2v-i2v-14b-480p-cfg-step-distill-rank64-bf16.safetensors/resolve/main/lightx2v_I2V_14B_480p_cfg_step_distill_rank64_bf16.safetensors"
+
 
 )
 
