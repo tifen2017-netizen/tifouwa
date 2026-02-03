@@ -36,7 +36,6 @@ UNET_MODELS=(
 
 LORA_MODELS=(
 "https://civitai.com/api/download/models/2580860?type=Model&format=SafeTensor&size=pruned&fp=bf16"
-"https://civitai.com/models/120723/detailedeyesxl"
 )
 
 VAE_MODELS=(
@@ -168,21 +167,33 @@ function provisioning_has_valid_civitai_token() {
 
 # Download from $1 URL to $2 file path
 function provisioning_download() {
-    auth_token=""
+    url="$1"
+    dir="$2"
+    filename=$(basename "${url%%\?*}")
 
-    if [[ -n "$HF_TOKEN" && "$1" =~ huggingface\.co ]]; then
-        auth_token="$HF_TOKEN"
-    elif [[ -n "$CIVITAI_TOKEN" && "$1" =~ civitai\.com ]]; then
-        auth_token="$CIVITAI_TOKEN"
-    fi
+    mkdir -p "$dir"
 
-    if [[ -n "$auth_token" ]]; then
-        wget --header="Authorization: Bearer $auth_token" \
-             --content-disposition --show-progress \
-             -P "$2" "$1"
+    if [[ -n "$CIVITAI_TOKEN" && "$url" =~ civitai\.com ]]; then
+        echo "Downloading from CivitAI with token..."
+
+        curl -L \
+          -H "Authorization: Bearer $CIVITAI_TOKEN" \
+          -H "User-Agent: Mozilla/5.0" \
+          -o "$dir/$filename" \
+          "$url"
+
+    elif [[ -n "$HF_TOKEN" && "$url" =~ huggingface\.co ]]; then
+        echo "Downloading from HuggingFace with token..."
+
+        curl -L \
+          -H "Authorization: Bearer $HF_TOKEN" \
+          -o "$dir/$filename" \
+          "$url"
+
     else
-        wget --content-disposition --show-progress \
-             -P "$2" "$1"
+        echo "Downloading without token..."
+
+        curl -L -o "$dir/$filename" "$url"
     fi
 }
 
