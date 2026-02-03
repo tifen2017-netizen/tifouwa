@@ -36,6 +36,7 @@ UNET_MODELS=(
 
 LORA_MODELS=(
 "https://civitai.com/api/download/models/2580860?type=Model&format=SafeTensor&size=pruned&fp=bf16"
+"https://civitai.com/models/120723/detailedeyesxl"
 )
 
 VAE_MODELS=(
