@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source /venv/main/bin/activate
-COMFYUI_DIR="/workspace/ComfyUI"
+COMFYUI_DIR=${WORKSPACE}/ComfyUI
 
 # Packages are installed after nodes so we can fix them...
 
@@ -16,7 +16,7 @@ PIP_PACKAGES=(
 )
 
 NODES=(
-    #"https://github.com/ltdrdata/ComfyUI-Manager"
+    "https://github.com/ltdrdata/ComfyUI-Manager"
     "https://github.com/cubiq/ComfyUI_essentials"
     "https://github.com/MoonGoblinDev/Civicomfy"
     "https://github.com/romandev-codex/ComfyUI-Downloader"
@@ -27,27 +27,25 @@ WORKFLOWS=(
 
 )
 
-CHECKPOINT_MODELS=(
-    #"https://civitai.com/api/download/models/798204?type=Model&format=SafeTensor&size=full&fp=fp16"
+CLIP_MODELS=(
+    # None
 )
 
 UNET_MODELS=(
-)
-
-LORA_MODELS=(
-"https://civitai.com/api/download/models/2580860?type=Model&format=SafeTensor&size=pruned&fp=bf16"
-"https://civitai.com/models/122359/detail-tweaker-xl"
+    # None
 )
 
 VAE_MODELS=(
+    # None
 )
 
-ESRGAN_MODELS=(
+LORA_MODELS=(
+
 )
 
-CONTROLNET_MODELS=(
+CHECKPOINT_MODELS=(
 )
-CIVITAI_TOKEN="6e00ec3c296728e3bdffa16f366b8df7"
+
 ### DO NOT EDIT BELOW HERE UNLESS YOU KNOW WHAT YOU ARE DOING ###
 
 function provisioning_start() {
@@ -55,36 +53,33 @@ function provisioning_start() {
     provisioning_get_apt_packages
     provisioning_get_nodes
     provisioning_get_pip_packages
+
     provisioning_get_files \
         "${COMFYUI_DIR}/models/checkpoints" \
         "${CHECKPOINT_MODELS[@]}"
+
     provisioning_get_files \
-        "${COMFYUI_DIR}/models/unet" \
-        "${UNET_MODELS[@]}"
-    provisioning_get_files \
-        "${COMFYUI_DIR}/models/lora" \
+        "${COMFYUI_DIR}/models/loras" \
         "${LORA_MODELS[@]}"
+
+    workflows_dir="${COMFYUI_DIR}/user/default/workflows"
+    mkdir -p "${workflows_dir}"
     provisioning_get_files \
-        "${COMFYUI_DIR}/models/controlnet" \
-        "${CONTROLNET_MODELS[@]}"
-    provisioning_get_files \
-        "${COMFYUI_DIR}/models/vae" \
-        "${VAE_MODELS[@]}"
-    provisioning_get_files \
-        "${COMFYUI_DIR}/models/esrgan" \
-        "${ESRGAN_MODELS[@]}"
+        "${workflows_dir}" \
+        "${WORKFLOWS[@]}"
+
     provisioning_print_end
 }
 
 function provisioning_get_apt_packages() {
     if [[ -n $APT_PACKAGES ]]; then
-            sudo $APT_INSTALL ${APT_PACKAGES[@]}
+        sudo $APT_INSTALL ${APT_PACKAGES[@]}
     fi
 }
 
 function provisioning_get_pip_packages() {
     if [[ -n $PIP_PACKAGES ]]; then
-            pip install --no-cache-dir ${PIP_PACKAGES[@]}
+        pip install --no-cache-dir ${PIP_PACKAGES[@]}
     fi
 }
 
@@ -98,7 +93,7 @@ function provisioning_get_nodes() {
                 printf "Updating node: %s...\n" "${repo}"
                 ( cd "$path" && git pull )
                 if [[ -e $requirements ]]; then
-                   pip install --no-cache-dir -r "$requirements"
+                    pip install --no-cache-dir -r "$requirements"
                 fi
             fi
         else
@@ -113,12 +108,12 @@ function provisioning_get_nodes() {
 
 function provisioning_get_files() {
     if [[ -z $2 ]]; then return 1; fi
-    
+
     dir="$1"
     mkdir -p "$dir"
     shift
     arr=("$@")
-    printf "Downloading %s model(s) to %s...\n" "${#arr[@]}" "$dir"
+    printf "Downloading %s file(s) to %s...\n" "${#arr[@]}" "$dir"
     for url in "${arr[@]}"; do
         printf "Downloading: %s\n" "${url}"
         provisioning_download "${url}" "${dir}"
@@ -142,7 +137,6 @@ function provisioning_has_valid_hf_token() {
         -H "Authorization: Bearer $HF_TOKEN" \
         -H "Content-Type: application/json")
 
-    # Check if the token is valid
     if [ "$response" -eq 200 ]; then
         return 0
     else
@@ -158,7 +152,6 @@ function provisioning_has_valid_civitai_token() {
         -H "Authorization: Bearer $CIVITAI_TOKEN" \
         -H "Content-Type: application/json")
 
-    # Check if the token is valid
     if [ "$response" -eq 200 ]; then
         return 0
     else
@@ -166,40 +159,20 @@ function provisioning_has_valid_civitai_token() {
     fi
 }
 
-# Download from $1 URL to $2 file path
 function provisioning_download() {
-    url="$1"
-    dir="$2"
-    filename=$(basename "${url%%\?*}")
+    if [[ -n $HF_TOKEN && $1 =~ ^https://([a-zA-Z0-9_-]+\.)?huggingface\.co(/|$|\?) ]]; then
+        auth_token="$HF_TOKEN"
+    elif [[ -n $CIVITAI_TOKEN && $1 =~ ^https://([a-zA-Z0-9_-]+\.)?civitai\.com(/|$|\?) ]]; then
+        auth_token="$CIVITAI_TOKEN"
+    fi
 
-    mkdir -p "$dir"
-
-    if [[ -n "$CIVITAI_TOKEN" && "$url" =~ civitai\.com ]]; then
-        echo "Downloading from CivitAI with token..."
-
-        curl -L \
-          -H "Authorization: Bearer $CIVITAI_TOKEN" \
-          -H "User-Agent: Mozilla/5.0" \
-          -o "$dir/$filename" \
-          "$url"
-
-    elif [[ -n "$HF_TOKEN" && "$url" =~ huggingface\.co ]]; then
-        echo "Downloading from HuggingFace with token..."
-
-        curl -L \
-          -H "Authorization: Bearer $HF_TOKEN" \
-          -o "$dir/$filename" \
-          "$url"
-
+    if [[ -n $auth_token ]]; then
+        wget --header="Authorization: Bearer $auth_token" -qnc --content-disposition --show-progress -e dotbytes="${3:-4M}" -P "$2" "$1"
     else
-        echo "Downloading without token..."
-
-        curl -L -o "$dir/$filename" "$url"
+        wget -qnc --content-disposition --show-progress -e dotbytes="${3:-4M}" -P "$2" "$1"
     fi
 }
 
-
-# Allow user to disable provisioning if they started with a script they didn't want
 if [[ ! -f /.noprovisioning ]]; then
     provisioning_start
 fi
