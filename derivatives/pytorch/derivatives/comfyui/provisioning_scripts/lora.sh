@@ -18,6 +18,10 @@ PIP_PACKAGES=(
 NODES=(
     #"https://github.com/ltdrdata/ComfyUI-Manager"
     #"https://github.com/cubiq/ComfyUI_essentials"
+"https://github.com/cubiq/ComfyUI_essentials"
+"https://github.com/MoonGoblinDev/Civicomfy"
+"https://github.com/romandev-codex/ComfyUI-Downloader"
+"https://github.com/willmiao/ComfyUI-Lora-Manager"
 )
 
 WORKFLOWS=(
