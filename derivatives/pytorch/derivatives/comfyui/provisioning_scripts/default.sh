@@ -17,9 +17,10 @@ PIP_PACKAGES=(
 
 NODES=(
     #"https://github.com/ltdrdata/ComfyUI-Manager"
-    #"https://github.com/cubiq/ComfyUI_essentials"
+    "https://github.com/cubiq/ComfyUI_essentials"
     "https://github.com/MoonGoblinDev/Civicomfy"
     "https://github.com/romandev-codex/ComfyUI-Downloader"
+    "https://github.com/willmiao/ComfyUI-Lora-Manager"
 )
 
 WORKFLOWS=(
@@ -27,7 +28,7 @@ WORKFLOWS=(
 )
 
 CHECKPOINT_MODELS=(
-    "https://civitai.com/api/download/models/798204?type=Model&format=SafeTensor&size=full&fp=fp16"
+    #"https://civitai.com/api/download/models/798204?type=Model&format=SafeTensor&size=full&fp=fp16"
 )
 
 UNET_MODELS=(
