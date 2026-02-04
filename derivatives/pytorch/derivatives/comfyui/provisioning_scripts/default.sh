@@ -23,6 +23,7 @@ NODES=(
     "https://github.com/willmiao/ComfyUI-Lora-Manager"
 	"https://github.com/kijai/ComfyUI-segment-anything-2"
 	"https://github.com/un-seen/comfyui-tensorops"
+	"https://github.com/crystian/ComfyUI-Crystools?tab=readme-ov-file"
 )
 
 WORKFLOWS=(
