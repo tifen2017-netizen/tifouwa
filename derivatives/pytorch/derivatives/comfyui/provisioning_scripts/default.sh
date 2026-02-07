@@ -37,16 +37,17 @@ CLIP_MODELS=(
 )
 
 UNET_MODELS=(
-    # None
+"https://huggingface.co/UmeAiRT/ComfyUI-Auto_installer/resolve/main/models/unet/WAN/wan2.2_i2v_high_noise_14B_Q3_K_S.gguf?download=true"
+"https://huggingface.co/UmeAiRT/ComfyUI-Auto_installer/resolve/main/models/unet/WAN/wan2.2_i2v_low_noise_14B_Q3_K_S.gguf"
 )
 
 VAE_MODELS=(
-
-
+"https://huggingface.co/Comfy-Org/Wan_2.1_ComfyUI_repackaged/resolve/main/split_files/vae/wan_2.1_vae.safetensors"
 )
 
 LORA_MODELS=(
-
+"https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth"
+"https://huggingface.co/UmeAiRT/ComfyUI-Auto_installer/resolve/refs%2Fpr%2F5/models/clip/umt5-xxl-encoder-fp8-e4m3fn-scaled.safetensors"
 
 
 )
